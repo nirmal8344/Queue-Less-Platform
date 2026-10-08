@@ -98,6 +98,15 @@ export const StaffLogin = ({ setCurrentView }) => {
             <UserCheck size={18} color="var(--primary)" style={{ flexShrink: 0 }} />
             <span>Staff accounts are created and managed by system administrators. Contact your administrator if you need access.</span>
           </div>
+
+          <div className="auth-footer-text" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+            <span onClick={() => setCurrentView('customer-login')} className="auth-link">
+              ← Customer Login
+            </span>
+            <span onClick={() => setCurrentView('admin-login')} className="auth-link">
+              Admin Login →
+            </span>
+          </div>
         </div>
       </div>
     </div>

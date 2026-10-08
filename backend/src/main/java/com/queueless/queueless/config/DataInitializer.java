@@ -55,18 +55,25 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String adminPass = (seedAdminPassword != null && !seedAdminPassword.trim().isEmpty()) ? seedAdminPassword : "AdminPass@123";
+        String adminPass = (seedAdminPassword != null && !seedAdminPassword.trim().isEmpty()) ? seedAdminPassword : "QueueLess@Admin2026!";
         String staffPass = (seedStaffPassword != null && !seedStaffPassword.trim().isEmpty()) ? seedStaffPassword : "StaffPass@123";
         String customerPass = "customer123";
 
-        // Seed Admin Account
-        if (userRepository.findByEmail("admin@queueless.com").isEmpty()) {
-            User admin = new User("System Admin", "admin@queueless.com",
-                    passwordEncoder.encode(adminPass), "+91 98400 00001", Role.ADMIN);
-            userRepository.save(admin);
-        }
+        // Seed / Update Admin Account safely & idempotently
+        userRepository.findByEmail("admin@queueless.com").ifPresentOrElse(
+            admin -> {
+                admin.setRole(Role.ADMIN);
+                admin.setPassword(passwordEncoder.encode(adminPass));
+                userRepository.save(admin);
+            },
+            () -> {
+                User admin = new User("System Admin", "admin@queueless.com",
+                        passwordEncoder.encode(adminPass), "+91 98400 00001", Role.ADMIN);
+                userRepository.save(admin);
+            }
+        );
 
-        // Seed Primary Staff Account
+        // Seed Primary Staff Account safely
         if (userRepository.findByEmail("staff@queueless.com").isEmpty()) {
             User staff = new User("Primary Staff", "staff@queueless.com",
                     passwordEncoder.encode(staffPass), "+91 98400 00002", Role.STAFF);

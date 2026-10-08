@@ -22,7 +22,8 @@ import {
   ChevronRight,
   Menu,
   X,
-  Monitor
+  Monitor,
+  ShieldCheck
 } from 'lucide-react';
 
 export const Sidebar = ({ currentView, setCurrentView }) => {
@@ -235,16 +236,40 @@ export const Sidebar = ({ currentView, setCurrentView }) => {
             </button>
           </>
         ) : (
-          <button
-            className="sidebar-nav-item sidebar-signin"
-            onClick={() => navigate('customer-login')}
-            title={collapsed && !isMobile ? 'Sign In' : undefined}
-          >
-            <UserIcon size={19} className="sidebar-nav-icon" />
-            {(!collapsed || isMobile) && (
-              <span className="sidebar-nav-label">Sign In</span>
-            )}
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <button
+              className="sidebar-nav-item sidebar-signin"
+              onClick={() => navigate('customer-login')}
+              title={collapsed && !isMobile ? 'Customer Sign In' : undefined}
+            >
+              <UserIcon size={19} className="sidebar-nav-icon" />
+              {(!collapsed || isMobile) && (
+                <span className="sidebar-nav-label">Customer Sign In</span>
+              )}
+            </button>
+            <button
+              className="sidebar-nav-item"
+              onClick={() => navigate('staff-login')}
+              title={collapsed && !isMobile ? 'Staff Portal' : undefined}
+              style={{ fontSize: '0.82rem' }}
+            >
+              <Users size={18} className="sidebar-nav-icon" />
+              {(!collapsed || isMobile) && (
+                <span className="sidebar-nav-label">Staff Portal</span>
+              )}
+            </button>
+            <button
+              className="sidebar-nav-item"
+              onClick={() => navigate('admin-login')}
+              title={collapsed && !isMobile ? 'Admin Console' : undefined}
+              style={{ fontSize: '0.82rem' }}
+            >
+              <ShieldCheck size={18} className="sidebar-nav-icon" />
+              {(!collapsed || isMobile) && (
+                <span className="sidebar-nav-label">Admin Console</span>
+              )}
+            </button>
+          </div>
         )}
       </div>
     </>

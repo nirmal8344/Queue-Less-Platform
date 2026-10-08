@@ -94,15 +94,26 @@ export const CustomerLogin = ({ setCurrentView }) => {
             </button>
           </form>
 
-          <p className="auth-footer-text">
-            Don't have an account?{' '}
-            <span
-              onClick={() => setCurrentView('customer-register')}
-              className="auth-link"
-            >
-              Sign up
+          <div className="auth-footer-text" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+            <span>
+              Don't have an account?{' '}
+              <span
+                onClick={() => setCurrentView('customer-register')}
+                className="auth-link"
+              >
+                Sign up
+              </span>
             </span>
-          </p>
+            <span>
+              <span onClick={() => setCurrentView('staff-login')} className="auth-link">
+                Staff Login
+              </span>
+              {' | '}
+              <span onClick={() => setCurrentView('admin-login')} className="auth-link">
+                Admin Login
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
