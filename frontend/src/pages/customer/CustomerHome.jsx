@@ -141,9 +141,6 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
         gap: '24px'
       }}>
         <div style={{ maxWidth: '640px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--primary-light)', color: 'var(--primary-dark)', padding: '4px 12px', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 700, marginBottom: '14px' }}>
-            <Sparkles size={14} /> Smart Digital Queue & Appointments
-          </div>
           <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.2, letterSpacing: '-0.02em', marginBottom: '12px' }}>
             Zero Waiting in Lines.<br />Manage Your Turn with Ease.
           </h1>
@@ -173,7 +170,7 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border)',
           padding: '24px',
-          minWidth: '300px',
+          width: '100%',
           maxWidth: '360px',
           flex: 1
         }}>
@@ -205,17 +202,8 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
         </div>
       </div>
 
-      {/* Primary Workflow Roadmap Banner (from PDF requirements) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(6, 1fr)',
-        gap: '8px',
-        backgroundColor: 'var(--surface)',
-        padding: '16px 20px',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border)',
-        textAlign: 'center'
-      }}>
+      {/* Primary Workflow Roadmap Banner */}
+      <div className="workflow-roadmap-banner">
         {[
           { step: '1', title: 'Service Selection' },
           { step: '2', title: 'Appointment / Token' },
@@ -231,7 +219,7 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
               </span>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}>{s.title}</span>
             </div>
-            {idx < 5 && <span style={{ color: 'var(--border)', fontSize: '1rem' }}>→</span>}
+            {idx < 5 && <span className="roadmap-arrow" style={{ color: 'var(--border)', fontSize: '1rem' }}>→</span>}
           </div>
         ))}
       </div>
