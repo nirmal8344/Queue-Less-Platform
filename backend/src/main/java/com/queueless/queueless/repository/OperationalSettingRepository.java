@@ -1,0 +1,12 @@
+package com.queueless.queueless.repository;
+
+import com.queueless.queueless.model.OperationalSetting;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface OperationalSettingRepository extends JpaRepository<OperationalSetting, Long> {
+    Optional<OperationalSetting> findBySettingKey(String settingKey);
+}
