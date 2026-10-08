@@ -284,7 +284,7 @@ public class DataInitializer implements CommandLineRunner {
             a2.setServiceId(chennaiCsh.getId());
             a2.setAppointmentDate(LocalDate.now());
             a2.setAppointmentTime(LocalTime.of(11, 00));
-            a2.setStatus(AppointmentStatus.CHECKED_IN);
+            a2.setStatus(AppointmentStatus.SCHEDULED);
             appointmentRepository.save(a2);
         }
     }
