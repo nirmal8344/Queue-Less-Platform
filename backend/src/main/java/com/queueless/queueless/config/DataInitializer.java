@@ -59,6 +59,12 @@ public class DataInitializer implements CommandLineRunner {
         String staffPass = (seedStaffPassword != null && !seedStaffPassword.trim().isEmpty()) ? seedStaffPassword : "StaffPass@123";
         String customerPass = "customer123";
 
+        // Force update workingDays for ALL existing branches in PostgreSQL
+        branchRepository.findAll().forEach(b -> {
+            b.setWorkingDays("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY");
+            branchRepository.save(b);
+        });
+
         // Seed / Update Admin Account safely & idempotently
         userRepository.findByEmail("admin@queueless.com").ifPresentOrElse(
             admin -> {
