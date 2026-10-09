@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -202,79 +203,96 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        // Seed Sample Queue Tokens for ALL branches with ALL statuses dynamically
-        for (Branch b : allBranches) {
-            List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
-            List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
-            if (bServices.isEmpty()) continue;
-
-            ServiceEntity s1 = bServices.get(0);
-            ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
-            ServiceEntity s3 = bServices.size() > 2 ? bServices.get(2) : s1;
-
-            Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : null;
-            Counter c2 = bCounters.size() > 1 ? bCounters.get(1) : c1;
-
-            // Ensure Active Serving Token (CALLED or IN_SERVICE) exists for Live TV Display
-            if (queueTokenRepository.findActiveServingTokensForBranch(b.getId()).isEmpty()) {
-                QueueToken tokInServ = new QueueToken();
-                tokInServ.setTokenNumber(s2.getCode() + "-102");
-                tokInServ.setBranchId(b.getId());
-                tokInServ.setServiceId(s2.getId());
-                tokInServ.setCustomerId(vignesh.getId());
-                tokInServ.setCustomerName(vignesh.getName());
-                tokInServ.setCustomerEmail(vignesh.getEmail());
-                tokInServ.setCustomerPhone(vignesh.getPhone());
-                if (c1 != null) {
-                    tokInServ.setCounterId(c1.getId());
-                    tokInServ.setCounterName(c1.getName());
+        // Seed Sample Queue Tokens for ALL branches in DB with ALL statuses dynamically
+        for (Branch b : branchRepository.findAll()) {
+            try {
+                List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
+                List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
+                if (bServices.isEmpty()) {
+                    // Create default service if missing
+                    ServiceEntity defSvc = getOrCreateService(b.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
+                    bServices = List.of(defSvc);
                 }
-                tokInServ.setStatus(QueueStatus.IN_SERVICE);
-                tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(25));
-                tokInServ.setCalledTime(LocalDateTime.now().minusMinutes(10));
-                tokInServ.setServiceStartTime(LocalDateTime.now().minusMinutes(8));
-                tokInServ.setEstimatedWaitMinutes(0);
-                queueTokenRepository.save(tokInServ);
-            }
 
-            // Ensure Recently Completed Token exists for Live TV Display
-            if (queueTokenRepository.findRecentCompletedForBranch(b.getId()).isEmpty()) {
-                QueueToken tokComp = new QueueToken();
-                tokComp.setTokenNumber(s1.getCode() + "-104");
-                tokComp.setBranchId(b.getId());
-                tokComp.setServiceId(s1.getId());
-                tokComp.setCustomerId(monisha.getId());
-                tokComp.setCustomerName(monisha.getName());
-                tokComp.setCustomerEmail(monisha.getEmail());
-                tokComp.setCustomerPhone(monisha.getPhone());
-                if (c1 != null) {
-                    tokComp.setCounterId(c1.getId());
-                    tokComp.setCounterName(c1.getName());
+                ServiceEntity s1 = bServices.get(0);
+                ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
+
+                Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : getOrCreateCounter(b.getId(), "Counter 1", 1, "Ground Floor, Window 1");
+
+                // Ensure Active Serving Token (IN_SERVICE or CALLED) exists for Live TV Display
+                if (queueTokenRepository.findActiveServingTokensForBranch(b.getId()).isEmpty()) {
+                    try {
+                        QueueToken tokInServ = new QueueToken();
+                        tokInServ.setTokenNumber(s2.getCode() + "-" + b.getId() + "02");
+                        tokInServ.setBranchId(b.getId());
+                        tokInServ.setServiceId(s2.getId());
+                        tokInServ.setCustomerId(vignesh.getId());
+                        tokInServ.setCustomerName(vignesh.getName());
+                        tokInServ.setCustomerEmail(vignesh.getEmail());
+                        tokInServ.setCustomerPhone(vignesh.getPhone());
+                        if (c1 != null) {
+                            tokInServ.setCounterId(c1.getId());
+                            tokInServ.setCounterName(c1.getName());
+                        }
+                        tokInServ.setStatus(QueueStatus.IN_SERVICE);
+                        tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(25));
+                        tokInServ.setCalledTime(LocalDateTime.now().minusMinutes(10));
+                        tokInServ.setServiceStartTime(LocalDateTime.now().minusMinutes(8));
+                        tokInServ.setEstimatedWaitMinutes(0);
+                        queueTokenRepository.save(tokInServ);
+                    } catch (Exception ex) {
+                        System.err.println("Seeding active serving token error for branch " + b.getId() + ": " + ex.getMessage());
+                    }
                 }
-                tokComp.setStatus(QueueStatus.COMPLETED);
-                tokComp.setIssueTime(LocalDateTime.now().minusMinutes(50));
-                tokComp.setCalledTime(LocalDateTime.now().minusMinutes(35));
-                tokComp.setServiceStartTime(LocalDateTime.now().minusMinutes(33));
-                tokComp.setServiceEndTime(LocalDateTime.now().minusMinutes(15));
-                tokComp.setActualServiceTimeMinutes(18);
-                tokComp.setNotes("Service completed successfully");
-                queueTokenRepository.save(tokComp);
-            }
 
-            // Ensure Waiting Token exists
-            if (queueTokenRepository.findWaitingTokensForBranch(b.getId()).isEmpty()) {
-                QueueToken tokWaiting = new QueueToken();
-                tokWaiting.setTokenNumber(s1.getCode() + "-101");
-                tokWaiting.setBranchId(b.getId());
-                tokWaiting.setServiceId(s1.getId());
-                tokWaiting.setCustomerId(nirmal.getId());
-                tokWaiting.setCustomerName(nirmal.getName());
-                tokWaiting.setCustomerEmail(nirmal.getEmail());
-                tokWaiting.setCustomerPhone(nirmal.getPhone());
-                tokWaiting.setStatus(QueueStatus.WAITING);
-                tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
-                tokWaiting.setEstimatedWaitMinutes(15);
-                queueTokenRepository.save(tokWaiting);
+                // Ensure Recently Completed Token exists for Live TV Display
+                if (queueTokenRepository.findRecentCompletedForBranch(b.getId()).isEmpty()) {
+                    try {
+                        QueueToken tokComp = new QueueToken();
+                        tokComp.setTokenNumber(s1.getCode() + "-" + b.getId() + "04");
+                        tokComp.setBranchId(b.getId());
+                        tokComp.setServiceId(s1.getId());
+                        tokComp.setCustomerId(monisha.getId());
+                        tokComp.setCustomerName(monisha.getName());
+                        tokComp.setCustomerEmail(monisha.getEmail());
+                        tokComp.setCustomerPhone(monisha.getPhone());
+                        if (c1 != null) {
+                            tokComp.setCounterId(c1.getId());
+                            tokComp.setCounterName(c1.getName());
+                        }
+                        tokComp.setStatus(QueueStatus.COMPLETED);
+                        tokComp.setIssueTime(LocalDateTime.now().minusMinutes(50));
+                        tokComp.setCalledTime(LocalDateTime.now().minusMinutes(35));
+                        tokComp.setServiceStartTime(LocalDateTime.now().minusMinutes(33));
+                        tokComp.setServiceEndTime(LocalDateTime.now().minusMinutes(15));
+                        tokComp.setNotes("Service completed successfully");
+                        queueTokenRepository.save(tokComp);
+                    } catch (Exception ex) {
+                        System.err.println("Seeding completed token error for branch " + b.getId() + ": " + ex.getMessage());
+                    }
+                }
+
+                // Ensure Waiting Token exists
+                if (queueTokenRepository.findWaitingTokensForBranch(b.getId()).isEmpty()) {
+                    try {
+                        QueueToken tokWaiting = new QueueToken();
+                        tokWaiting.setTokenNumber(s1.getCode() + "-" + b.getId() + "01");
+                        tokWaiting.setBranchId(b.getId());
+                        tokWaiting.setServiceId(s1.getId());
+                        tokWaiting.setCustomerId(nirmal.getId());
+                        tokWaiting.setCustomerName(nirmal.getName());
+                        tokWaiting.setCustomerEmail(nirmal.getEmail());
+                        tokWaiting.setCustomerPhone(nirmal.getPhone());
+                        tokWaiting.setStatus(QueueStatus.WAITING);
+                        tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
+                        tokWaiting.setEstimatedWaitMinutes(15);
+                        queueTokenRepository.save(tokWaiting);
+                    } catch (Exception ex) {
+                        System.err.println("Seeding waiting token error for branch " + b.getId() + ": " + ex.getMessage());
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error seeding branch " + b.getId() + ": " + e.getMessage());
             }
         }
 
