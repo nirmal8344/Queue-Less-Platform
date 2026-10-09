@@ -74,8 +74,8 @@ export const StaffCurrentQueue = () => {
     const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
     const matchesCounter = !selectedCounterId || (t.counterId && String(t.counterId) === String(selectedCounterId));
     const matchesStaff = !selectedStaffId || (t.staffId && String(t.staffId) === String(selectedStaffId));
-    const matchesSearch = 
-      t.tokenNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = !searchTerm ||
+      t.tokenNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.serviceName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.counterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -125,14 +125,14 @@ export const StaffCurrentQueue = () => {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {['ALL', 'WAITING', 'CALLED', 'IN_SERVICE', 'PAUSED', 'SKIPPED', 'COMPLETED'].map((status) => (
+            {['ALL', 'WAITING', 'CALLED', 'IN_SERVICE', 'PAUSED', 'SKIPPED', 'COMPLETED', 'NO_SHOW'].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
                 className={`btn btn-sm ${statusFilter === status ? 'btn-primary' : 'btn-outline'}`}
                 style={{ fontSize: '0.8rem', padding: '6px 12px' }}
               >
-                {status === 'IN_SERVICE' ? 'IN SERVICE' : status}
+                {status === 'IN_SERVICE' ? 'IN SERVICE' : status === 'NO_SHOW' ? 'NO SHOW' : status}
               </button>
             ))}
           </div>

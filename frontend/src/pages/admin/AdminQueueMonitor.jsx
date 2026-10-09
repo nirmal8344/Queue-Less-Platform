@@ -60,7 +60,7 @@ export const AdminQueueMonitor = () => {
     const matchesCounter = !selectedCounterId || (tok.counterId && String(tok.counterId) === String(selectedCounterId));
     const matchesStaff = !selectedStaffId || (tok.staffId && String(tok.staffId) === String(selectedStaffId));
     const matchesSearch = !searchTerm ||
-      tok.tokenNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tok.tokenNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tok.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tok.serviceName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tok.counterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||

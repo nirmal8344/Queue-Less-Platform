@@ -188,126 +188,133 @@ public class DataInitializer implements CommandLineRunner {
         User arunprakash = getOrCreateCustomerUser("Arun Prakash", "arunprakash@gmail.com", customerPass, "+91 99401 22009");
         User divyapriya = getOrCreateCustomerUser("Divya Priya", "divyapriya@gmail.com", customerPass, "+91 99401 22010");
 
-        // Seed Sample Queue Tokens with ALL statuses (Dynamic for Today)
-        if (queueTokenRepository.count() == 0) {
-            // Token 1: WAITING
-            QueueToken t1 = new QueueToken();
-            t1.setTokenNumber("ACC-101");
-            t1.setBranchId(salemBranch.getId());
-            t1.setServiceId(salemAcc.getId());
-            t1.setCustomerId(nirmal.getId());
-            t1.setCustomerName(nirmal.getName());
-            t1.setCustomerEmail(nirmal.getEmail());
-            t1.setCustomerPhone(nirmal.getPhone());
-            t1.setStatus(QueueStatus.WAITING);
-            t1.setIssueTime(LocalDateTime.now().minusMinutes(25));
-            t1.setEstimatedWaitMinutes(15);
-            queueTokenRepository.save(t1);
+        // Ensure all branches have SATURDAY included in workingDays
+        for (Branch b : allBranches) {
+            if (b.getWorkingDays() == null || !b.getWorkingDays().contains("SATURDAY")) {
+                b.setWorkingDays("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY");
+                branchRepository.save(b);
+            }
+        }
 
-            // Token 2: CALLED
-            QueueToken t2 = new QueueToken();
-            t2.setTokenNumber("CSH-102");
-            t2.setBranchId(salemBranch.getId());
-            t2.setServiceId(salemCsh.getId());
-            t2.setCustomerId(vignesh.getId());
-            t2.setCustomerName(vignesh.getName());
-            t2.setCustomerEmail(vignesh.getEmail());
-            t2.setCustomerPhone(vignesh.getPhone());
-            t2.setCounterId(salemC1.getId());
-            t2.setCounterName(salemC1.getName());
-            t2.setStaffId(karthik.getId());
-            t2.setStaffName(karthik.getName());
-            t2.setStatus(QueueStatus.CALLED);
-            t2.setIssueTime(LocalDateTime.now().minusMinutes(20));
-            t2.setCalledTime(LocalDateTime.now().minusMinutes(2));
-            t2.setEstimatedWaitMinutes(0);
-            queueTokenRepository.save(t2);
+        // Seed Sample Queue Tokens for ALL branches with ALL statuses
+        for (Branch b : allBranches) {
+            if (queueTokenRepository.findByBranchId(b.getId()).isEmpty()) {
+                List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
+                List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
+                if (bServices.isEmpty()) continue;
 
-            // Token 3: IN_SERVICE
-            QueueToken t3 = new QueueToken();
-            t3.setTokenNumber("SUP-103");
-            t3.setBranchId(salemBranch.getId());
-            t3.setServiceId(salemSup.getId());
-            t3.setCustomerId(harish.getId());
-            t3.setCustomerName(harish.getName());
-            t3.setCustomerEmail(harish.getEmail());
-            t3.setCustomerPhone(harish.getPhone());
-            t3.setCounterId(salemC2.getId());
-            t3.setCounterName(salemC2.getName());
-            t3.setStaffId(priya.getId());
-            t3.setStaffName(priya.getName());
-            t3.setStatus(QueueStatus.IN_SERVICE);
-            t3.setIssueTime(LocalDateTime.now().minusMinutes(30));
-            t3.setCalledTime(LocalDateTime.now().minusMinutes(10));
-            t3.setServiceStartTime(LocalDateTime.now().minusMinutes(8));
-            t3.setEstimatedWaitMinutes(0);
-            queueTokenRepository.save(t3);
+                ServiceEntity s1 = bServices.get(0);
+                ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
+                ServiceEntity s3 = bServices.size() > 2 ? bServices.get(2) : s1;
 
-            // Token 4: COMPLETED
-            QueueToken t4 = new QueueToken();
-            t4.setTokenNumber("LON-104");
-            t4.setBranchId(salemBranch.getId());
-            t4.setServiceId(salemLon.getId());
-            t4.setCustomerId(monisha.getId());
-            t4.setCustomerName(monisha.getName());
-            t4.setCustomerEmail(monisha.getEmail());
-            t4.setCustomerPhone(monisha.getPhone());
-            t4.setCounterId(salemC3.getId());
-            t4.setCounterName(salemC3.getName());
-            t4.setStaffId(arun.getId());
-            t4.setStaffName(arun.getName());
-            t4.setStatus(QueueStatus.COMPLETED);
-            t4.setIssueTime(LocalDateTime.now().minusMinutes(45));
-            t4.setCalledTime(LocalDateTime.now().minusMinutes(25));
-            t4.setServiceStartTime(LocalDateTime.now().minusMinutes(23));
-            t4.setServiceEndTime(LocalDateTime.now().minusMinutes(5));
-            t4.setActualServiceTimeMinutes(18);
-            t4.setNotes("Loan enquiry resolved successfully");
-            queueTokenRepository.save(t4);
+                Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : null;
+                Counter c2 = bCounters.size() > 1 ? bCounters.get(1) : c1;
 
-            // Token 5: SKIPPED
-            QueueToken t5 = new QueueToken();
-            t5.setTokenNumber("ACC-105");
-            t5.setBranchId(salemBranch.getId());
-            t5.setServiceId(salemAcc.getId());
-            t5.setCustomerId(anitha.getId());
-            t5.setCustomerName(anitha.getName());
-            t5.setCustomerEmail(anitha.getEmail());
-            t5.setCustomerPhone(anitha.getPhone());
-            t5.setStatus(QueueStatus.SKIPPED);
-            t5.setIssueTime(LocalDateTime.now().minusMinutes(50));
-            t5.setCalledTime(LocalDateTime.now().minusMinutes(35));
-            t5.setNotes("Customer did not respond when called");
-            queueTokenRepository.save(t5);
+                // 1. WAITING Token
+                QueueToken tokWaiting = new QueueToken();
+                tokWaiting.setTokenNumber(s1.getCode() + "-101");
+                tokWaiting.setBranchId(b.getId());
+                tokWaiting.setServiceId(s1.getId());
+                tokWaiting.setCustomerId(nirmal.getId());
+                tokWaiting.setCustomerName(nirmal.getName());
+                tokWaiting.setCustomerEmail(nirmal.getEmail());
+                tokWaiting.setCustomerPhone(nirmal.getPhone());
+                tokWaiting.setStatus(QueueStatus.WAITING);
+                tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
+                tokWaiting.setEstimatedWaitMinutes(15);
+                queueTokenRepository.save(tokWaiting);
 
-            // Token 6: NO_SHOW
-            QueueToken t6 = new QueueToken();
-            t6.setTokenNumber("CSH-106");
-            t6.setBranchId(salemBranch.getId());
-            t6.setServiceId(salemCsh.getId());
-            t6.setCustomerId(kavin.getId());
-            t6.setCustomerName(kavin.getName());
-            t6.setCustomerEmail(kavin.getEmail());
-            t6.setCustomerPhone(kavin.getPhone());
-            t6.setStatus(QueueStatus.NO_SHOW);
-            t6.setIssueTime(LocalDateTime.now().minusMinutes(60));
-            t6.setCalledTime(LocalDateTime.now().minusMinutes(40));
-            t6.setNotes("Marked no show after second announcement");
-            queueTokenRepository.save(t6);
+                // 2. CALLED Token
+                QueueToken tokCalled = new QueueToken();
+                tokCalled.setTokenNumber(s2.getCode() + "-102");
+                tokCalled.setBranchId(b.getId());
+                tokCalled.setServiceId(s2.getId());
+                tokCalled.setCustomerId(vignesh.getId());
+                tokCalled.setCustomerName(vignesh.getName());
+                tokCalled.setCustomerEmail(vignesh.getEmail());
+                tokCalled.setCustomerPhone(vignesh.getPhone());
+                if (c1 != null) {
+                    tokCalled.setCounterId(c1.getId());
+                    tokCalled.setCounterName(c1.getName());
+                }
+                tokCalled.setStatus(QueueStatus.CALLED);
+                tokCalled.setIssueTime(LocalDateTime.now().minusMinutes(15));
+                tokCalled.setCalledTime(LocalDateTime.now().minusMinutes(2));
+                tokCalled.setEstimatedWaitMinutes(0);
+                queueTokenRepository.save(tokCalled);
 
-            // Token 7: Chennai WAITING
-            QueueToken t7 = new QueueToken();
-            t7.setTokenNumber("ACC-201");
-            t7.setBranchId(chennaiBranch.getId());
-            t7.setServiceId(chennaiAcc.getId());
-            t7.setCustomerId(nirmal.getId());
-            t7.setCustomerName(nirmal.getName());
-            t7.setCustomerEmail(nirmal.getEmail());
-            t7.setCustomerPhone(nirmal.getPhone());
-            t7.setStatus(QueueStatus.WAITING);
-            t7.setIssueTime(LocalDateTime.now().minusMinutes(10));
-            t7.setEstimatedWaitMinutes(10);
-            queueTokenRepository.save(t7);
+                // 3. IN_SERVICE Token
+                QueueToken tokInServ = new QueueToken();
+                tokInServ.setTokenNumber(s3.getCode() + "-103");
+                tokInServ.setBranchId(b.getId());
+                tokInServ.setServiceId(s3.getId());
+                tokInServ.setCustomerId(harish.getId());
+                tokInServ.setCustomerName(harish.getName());
+                tokInServ.setCustomerEmail(harish.getEmail());
+                tokInServ.setCustomerPhone(harish.getPhone());
+                if (c2 != null) {
+                    tokInServ.setCounterId(c2.getId());
+                    tokInServ.setCounterName(c2.getName());
+                }
+                tokInServ.setStatus(QueueStatus.IN_SERVICE);
+                tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(30));
+                tokInServ.setCalledTime(LocalDateTime.now().minusMinutes(10));
+                tokInServ.setServiceStartTime(LocalDateTime.now().minusMinutes(8));
+                tokInServ.setEstimatedWaitMinutes(0);
+                queueTokenRepository.save(tokInServ);
+
+                // 4. COMPLETED Token
+                QueueToken tokComp = new QueueToken();
+                tokComp.setTokenNumber(s1.getCode() + "-104");
+                tokComp.setBranchId(b.getId());
+                tokComp.setServiceId(s1.getId());
+                tokComp.setCustomerId(monisha.getId());
+                tokComp.setCustomerName(monisha.getName());
+                tokComp.setCustomerEmail(monisha.getEmail());
+                tokComp.setCustomerPhone(monisha.getPhone());
+                if (c1 != null) {
+                    tokComp.setCounterId(c1.getId());
+                    tokComp.setCounterName(c1.getName());
+                }
+                tokComp.setStatus(QueueStatus.COMPLETED);
+                tokComp.setIssueTime(LocalDateTime.now().minusMinutes(50));
+                tokComp.setCalledTime(LocalDateTime.now().minusMinutes(35));
+                tokComp.setServiceStartTime(LocalDateTime.now().minusMinutes(33));
+                tokComp.setServiceEndTime(LocalDateTime.now().minusMinutes(15));
+                tokComp.setActualServiceTimeMinutes(18);
+                tokComp.setNotes("Service completed successfully");
+                queueTokenRepository.save(tokComp);
+
+                // 5. SKIPPED Token
+                QueueToken tokSkip = new QueueToken();
+                tokSkip.setTokenNumber(s2.getCode() + "-105");
+                tokSkip.setBranchId(b.getId());
+                tokSkip.setServiceId(s2.getId());
+                tokSkip.setCustomerId(anitha.getId());
+                tokSkip.setCustomerName(anitha.getName());
+                tokSkip.setCustomerEmail(anitha.getEmail());
+                tokSkip.setCustomerPhone(anitha.getPhone());
+                tokSkip.setStatus(QueueStatus.SKIPPED);
+                tokSkip.setIssueTime(LocalDateTime.now().minusMinutes(60));
+                tokSkip.setCalledTime(LocalDateTime.now().minusMinutes(40));
+                tokSkip.setNotes("Customer absent during call");
+                queueTokenRepository.save(tokSkip);
+
+                // 6. NO_SHOW Token
+                QueueToken tokNoShow = new QueueToken();
+                tokNoShow.setTokenNumber(s3.getCode() + "-106");
+                tokNoShow.setBranchId(b.getId());
+                tokNoShow.setServiceId(s3.getId());
+                tokNoShow.setCustomerId(kavin.getId());
+                tokNoShow.setCustomerName(kavin.getName());
+                tokNoShow.setCustomerEmail(kavin.getEmail());
+                tokNoShow.setCustomerPhone(kavin.getPhone());
+                tokNoShow.setStatus(QueueStatus.NO_SHOW);
+                tokNoShow.setIssueTime(LocalDateTime.now().minusMinutes(70));
+                tokNoShow.setCalledTime(LocalDateTime.now().minusMinutes(45));
+                tokNoShow.setNotes("Marked no-show after final alert");
+                queueTokenRepository.save(tokNoShow);
+            }
         }
 
         // Seed Sample Appointments (Dynamic for Today and Future)

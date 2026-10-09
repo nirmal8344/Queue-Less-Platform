@@ -25,8 +25,8 @@ public class Branch {
     private LocalTime openingTime = LocalTime.of(9, 0);
     private LocalTime closingTime = LocalTime.of(17, 0);
 
-    // Comma-separated days, e.g. "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY"
-    private String workingDays = "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY";
+    // Comma-separated days, e.g. "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY"
+    private String workingDays = "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY";
 
     private boolean active = true;
 
