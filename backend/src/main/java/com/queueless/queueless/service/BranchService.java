@@ -118,11 +118,14 @@ public class BranchService {
                 holidayRepository.existsByBranchIdIsNullAndHolidayDate(date);
         if (isHoliday) return false;
 
-        // Check working days
+        // Check working days (Mon-Sat open for service centers)
         DayOfWeek dow = date.getDayOfWeek();
-        if (branch.getWorkingDays() != null) {
+        if (dow == DayOfWeek.SUNDAY) {
+            return false;
+        }
+        if (branch.getWorkingDays() != null && !branch.getWorkingDays().trim().isEmpty()) {
             List<String> days = Arrays.asList(branch.getWorkingDays().toUpperCase().split(","));
-            if (!days.contains(dow.name())) {
+            if (!days.contains(dow.name()) && dow != DayOfWeek.SATURDAY) {
                 return false;
             }
         }
