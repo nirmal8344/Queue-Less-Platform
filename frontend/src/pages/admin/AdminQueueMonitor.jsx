@@ -165,7 +165,7 @@ export const AdminQueueMonitor = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--primary-subtle)', borderBottom: '1px solid var(--border)' }}>
-              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token #</th>
+              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Customer</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Service</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Priority</th>
@@ -244,7 +244,7 @@ export const AdminQueueMonitor = () => {
               }}
             >
               <div>
-                <strong style={{ color: 'var(--primary-dark)' }}>Token #{log.tokenId}</strong>:
+                <strong style={{ color: 'var(--primary-dark)' }}>Token {log.tokenId}</strong>:
                 <span style={{ margin: '0 6px', color: 'var(--text-muted)' }}>
                   {log.previousStatus ? log.previousStatus : 'ISSUED'} → <strong>{log.newStatus}</strong>
                 </span>
@@ -263,7 +263,7 @@ export const AdminQueueMonitor = () => {
         <div className="modal-overlay" onClick={() => setSelectedTokenLogs(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Audit History for Token #{selectedTokenLogs.tokenId}</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Audit History for Token {selectedTokenLogs.tokenId}</h3>
               <button onClick={() => setSelectedTokenLogs(null)} style={{ color: 'var(--text-muted)' }}><X size={20} /></button>
             </div>
 

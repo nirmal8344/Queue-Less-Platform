@@ -98,7 +98,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     try {
       const token = await api.callNextToken(selectedBranchId, selectedCounterId);
       playAnnouncementChime();
-      addToast('Next Customer Called', `Token #${token.tokenNumber} assigned to your counter.`, 'TOKEN_CALLED');
+      addToast('Next Customer Called', `Token ${token.tokenNumber} assigned to your counter.`, 'TOKEN_CALLED');
       fetchStaffData();
     } catch (err) {
       addToast('Cannot Call', err.message, 'error');
@@ -113,7 +113,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     try {
       await api.recallToken(currentServingToken.id);
       playAnnouncementChime();
-      addToast('Token Recalled', `Announcement repeated for #${currentServingToken.tokenNumber}`, 'TOKEN_CALLED');
+      addToast('Token Recalled', `Announcement repeated for ${currentServingToken.tokenNumber}`, 'TOKEN_CALLED');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -127,7 +127,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     setActionLoading(true);
     try {
       await api.startService(currentServingToken.id);
-      addToast('Service Started', `Serving #${currentServingToken.tokenNumber}`, 'info');
+      addToast('Service Started', `Serving ${currentServingToken.tokenNumber}`, 'info');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -141,7 +141,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     setActionLoading(true);
     try {
       await api.completeService(currentServingToken.id, serviceNotes);
-      addToast('Service Completed', `Token #${currentServingToken.tokenNumber} finished successfully.`, 'success');
+      addToast('Service Completed', `Token ${currentServingToken.tokenNumber} finished successfully.`, 'success');
       setServiceNotes('');
       setNotesModalOpen(false);
       fetchStaffData();
@@ -157,7 +157,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     setActionLoading(true);
     try {
       await api.pauseService(currentServingToken.id, 'Temporarily paused by staff');
-      addToast('Service Paused', `Service for token #${currentServingToken.tokenNumber} is paused.`, 'info');
+      addToast('Service Paused', `Service for token ${currentServingToken.tokenNumber} is paused.`, 'info');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -171,7 +171,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
     setActionLoading(true);
     try {
       await api.resumeService(currentServingToken.id);
-      addToast('Service Resumed', `Service for token #${currentServingToken.tokenNumber} has been resumed.`, 'info');
+      addToast('Service Resumed', `Service for token ${currentServingToken.tokenNumber} has been resumed.`, 'info');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -182,11 +182,11 @@ export const StaffDashboard = ({ setCurrentView }) => {
 
   const handleSkipToken = async () => {
     if (!currentServingToken) return;
-    if (!window.confirm(`Skip token #${currentServingToken.tokenNumber}?`)) return;
+    if (!window.confirm(`Skip token ${currentServingToken.tokenNumber}?`)) return;
     setActionLoading(true);
     try {
       await api.skipToken(currentServingToken.id, 'Skipped by staff desk');
-      addToast('Token Skipped', `Token #${currentServingToken.tokenNumber} moved to skipped list.`, 'info');
+      addToast('Token Skipped', `Token ${currentServingToken.tokenNumber} moved to skipped list.`, 'info');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -197,11 +197,11 @@ export const StaffDashboard = ({ setCurrentView }) => {
 
   const handleMarkNoShow = async () => {
     if (!currentServingToken) return;
-    if (!window.confirm(`Mark token #${currentServingToken.tokenNumber} as NO SHOW?`)) return;
+    if (!window.confirm(`Mark token ${currentServingToken.tokenNumber} as NO SHOW?`)) return;
     setActionLoading(true);
     try {
       await api.markNoShow(currentServingToken.id, 'Customer did not show up at counter');
-      addToast('Marked No Show', `Token #${currentServingToken.tokenNumber} marked as No Show.`, 'error');
+      addToast('Marked No Show', `Token ${currentServingToken.tokenNumber} marked as No Show.`, 'error');
       fetchStaffData();
     } catch (err) {
       addToast('Error', err.message, 'error');
@@ -548,7 +548,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>
-                        #{tok.tokenNumber}
+                        {tok.tokenNumber}
                       </strong>
                       {idx === 0 && (
                         <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--primary-dark)', backgroundColor: 'var(--primary)', color: '#fff', padding: '2px 6px', borderRadius: '4px' }}>
@@ -575,7 +575,7 @@ export const StaffDashboard = ({ setCurrentView }) => {
                         try {
                           await api.callSpecificToken(tok.id, selectedCounterId);
                           playAnnouncementChime();
-                          addToast('Called', `Token #${tok.tokenNumber} called to counter.`, 'TOKEN_CALLED');
+                          addToast('Called', `Token ${tok.tokenNumber} called to counter.`, 'TOKEN_CALLED');
                           fetchStaffData();
                         } catch (err) {
                           addToast('Error', err.message, 'error');

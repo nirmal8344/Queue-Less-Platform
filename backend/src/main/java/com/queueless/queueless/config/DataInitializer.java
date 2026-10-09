@@ -112,8 +112,26 @@ public class DataInitializer implements CommandLineRunner {
         Branch salemBranch = getOrCreateBranch(org.getId(), "Salem Main Branch", "SLM-01", "12, Five Roads, Salem, Tamil Nadu", "Salem", "+91 427 244 5500", "salem.main@queueless.com");
         Branch chennaiBranch = getOrCreateBranch(org.getId(), "Chennai Central Branch", "MAA-01", "25, Anna Salai, Chennai, Tamil Nadu", "Chennai", "+91 44 2852 1100", "chennai.central@queueless.com");
         Branch coimbatoreBranch = getOrCreateBranch(org.getId(), "Coimbatore Branch", "CJB-01", "18, Avinashi Road, Coimbatore, Tamil Nadu", "Coimbatore", "+91 422 230 4400", "coimbatore.office@queueless.com");
+        Branch maduraiBranch = getOrCreateBranch(org.getId(), "Madurai Branch", "MDU-01", "45, KK Nagar Main Road, Madurai, Tamil Nadu", "Madurai", "+91 452 253 2200", "madurai.hub@queueless.com");
+        Branch trichyBranch = getOrCreateBranch(org.getId(), "Tiruchirappalli Branch", "TRY-01", "10, Cantonment, Tiruchirappalli, Tamil Nadu", "Tiruchirappalli", "+91 431 241 3300", "trichy.center@queueless.com");
+        Branch erodeBranch = getOrCreateBranch(org.getId(), "Erode Branch", "ERD-01", "88, Brough Road, Erode, Tamil Nadu", "Erode", "+91 424 222 1100", "erode.office@queueless.com");
+        Branch tirunelveliBranch = getOrCreateBranch(org.getId(), "Tirunelveli Branch", "TNV-01", "34, High Ground Road, Tirunelveli, Tamil Nadu", "Tirunelveli", "+91 462 250 4400", "tirunelveli.main@queueless.com");
 
-        // Initialize Services for each branch
+        List<Branch> allBranches = List.of(salemBranch, chennaiBranch, coimbatoreBranch, maduraiBranch, trichyBranch, erodeBranch, tirunelveliBranch);
+
+        // Initialize Standard Services for each branch
+        for (Branch b : allBranches) {
+            getOrCreateService(b.getId(), "e-Sevai and Certificate Services", "ESV", "Government e-Sevai certificates and documentation", 15);
+            getOrCreateService(b.getId(), "Revenue and Land Administration", "REV", "Pattah, land revenue, and property records", 20);
+            getOrCreateService(b.getId(), "Transport and Driving Licence Services", "TRN", "RTO services, driving licences, and vehicle registration", 20);
+            getOrCreateService(b.getId(), "Utility and Public Grievances", "UTL", "Public grievances and utility bill payments", 15);
+            getOrCreateService(b.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
+            getOrCreateService(b.getId(), "Cash Deposit", "CSH", "Deposit cash at the service counter", 10);
+            getOrCreateService(b.getId(), "Customer Support", "SUP", "General customer support and assistance", 10);
+            getOrCreateService(b.getId(), "Loan Enquiry", "LON", "Enquiry regarding available loan services", 20);
+        }
+
+        // Initialize Services references for primary branches
         ServiceEntity salemAcc = getOrCreateService(salemBranch.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
         ServiceEntity salemCsh = getOrCreateService(salemBranch.getId(), "Cash Deposit", "CSH", "Deposit cash at the service counter", 10);
         ServiceEntity salemSup = getOrCreateService(salemBranch.getId(), "Customer Support", "SUP", "General customer support and assistance", 10);
@@ -121,13 +139,6 @@ public class DataInitializer implements CommandLineRunner {
 
         ServiceEntity chennaiAcc = getOrCreateService(chennaiBranch.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
         ServiceEntity chennaiCsh = getOrCreateService(chennaiBranch.getId(), "Cash Deposit", "CSH", "Deposit cash at the service counter", 10);
-        ServiceEntity chennaiSup = getOrCreateService(chennaiBranch.getId(), "Customer Support", "SUP", "General customer support and assistance", 10);
-        ServiceEntity chennaiLon = getOrCreateService(chennaiBranch.getId(), "Loan Enquiry", "LON", "Enquiry regarding available loan services", 20);
-
-        ServiceEntity cjbAcc = getOrCreateService(coimbatoreBranch.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
-        ServiceEntity cjbCsh = getOrCreateService(coimbatoreBranch.getId(), "Cash Deposit", "CSH", "Deposit cash at the service counter", 10);
-        ServiceEntity cjbSup = getOrCreateService(coimbatoreBranch.getId(), "Customer Support", "SUP", "General customer support and assistance", 10);
-        ServiceEntity cjbLon = getOrCreateService(coimbatoreBranch.getId(), "Loan Enquiry", "LON", "Enquiry regarding available loan services", 20);
 
         // Initialize Counters for branches
         Counter salemC1 = getOrCreateCounter(salemBranch.getId(), "Counter 1", 1, "Ground Floor, Window 1");
@@ -140,6 +151,9 @@ public class DataInitializer implements CommandLineRunner {
         Counter cjbC1 = getOrCreateCounter(coimbatoreBranch.getId(), "Counter 1", 1, "Ground Floor, Window 1");
         Counter cjbC2 = getOrCreateCounter(coimbatoreBranch.getId(), "Counter 2", 2, "Ground Floor, Window 2");
 
+        Counter mduC1 = getOrCreateCounter(maduraiBranch.getId(), "Counter 1", 1, "Ground Floor, Window 1");
+        Counter tryC1 = getOrCreateCounter(trichyBranch.getId(), "Counter 1", 1, "Ground Floor, Window 1");
+
         // Seed Tamil Nadu Staff Accounts
         User karthik = getOrCreateStaffUser("Karthik Raj", "karthik@queueless.com", staffPass, "+91 98401 11001", salemBranch.getId(), salemC1.getId());
         User priya = getOrCreateStaffUser("Priya Devi", "priya@queueless.com", staffPass, "+91 98401 11002", salemBranch.getId(), salemC2.getId());
@@ -149,7 +163,8 @@ public class DataInitializer implements CommandLineRunner {
         User divya = getOrCreateStaffUser("Divya Priya", "divya@queueless.com", staffPass, "+91 98402 11002", chennaiBranch.getId(), chennaiC2.getId());
 
         User naveen = getOrCreateStaffUser("Naveen Kumar", "naveen@queueless.com", staffPass, "+91 98403 11001", coimbatoreBranch.getId(), cjbC1.getId());
-        User keerthana = getOrCreateStaffUser("Keerthana S", "keerthana@queueless.com", staffPass, "+91 98403 11002", coimbatoreBranch.getId(), cjbC2.getId());
+        User keerthana = getOrCreateStaffUser("Keerthana S", "keerthana@queueless.com", staffPass, "+91 98403 11002", maduraiBranch.getId(), mduC1.getId());
+        User meena = getOrCreateStaffUser("Meena Lakshmi", "meena@queueless.com", staffPass, "+91 98404 11001", trichyBranch.getId(), tryC1.getId());
 
         // Assign staff to counters in Counter model
         assignStaffToCounter(salemC1, karthik);
@@ -158,7 +173,8 @@ public class DataInitializer implements CommandLineRunner {
         assignStaffToCounter(chennaiC1, suresh);
         assignStaffToCounter(chennaiC2, divya);
         assignStaffToCounter(cjbC1, naveen);
-        assignStaffToCounter(cjbC2, keerthana);
+        assignStaffToCounter(mduC1, keerthana);
+        assignStaffToCounter(tryC1, meena);
 
         // Seed Tamil Nadu Customer Demo Accounts
         User nirmal = getOrCreateCustomerUser("Nirmal Kumar", "nirmal@gmail.com", customerPass, "+91 99401 22001");
@@ -166,8 +182,13 @@ public class DataInitializer implements CommandLineRunner {
         User harish = getOrCreateCustomerUser("Harish Kumar", "harish@gmail.com", customerPass, "+91 99401 22003");
         User monisha = getOrCreateCustomerUser("Monisha Devi", "monisha@gmail.com", customerPass, "+91 99401 22004");
         User anitha = getOrCreateCustomerUser("Anitha S", "anitha@gmail.com", customerPass, "+91 99401 22005");
+        User kavin = getOrCreateCustomerUser("Kavin Raj", "kavin@gmail.com", customerPass, "+91 99401 22006");
+        User priyalakshmi = getOrCreateCustomerUser("Priya Lakshmi", "priyalakshmi@gmail.com", customerPass, "+91 99401 22007");
+        User saranya = getOrCreateCustomerUser("Saranya Devi", "saranya@gmail.com", customerPass, "+91 99401 22008");
+        User arunprakash = getOrCreateCustomerUser("Arun Prakash", "arunprakash@gmail.com", customerPass, "+91 99401 22009");
+        User divyapriya = getOrCreateCustomerUser("Divya Priya", "divyapriya@gmail.com", customerPass, "+91 99401 22010");
 
-        // Seed Sample Queue Tokens for Salem & Chennai (Dynamic for Today)
+        // Seed Sample Queue Tokens with ALL statuses (Dynamic for Today)
         if (queueTokenRepository.count() == 0) {
             // Token 1: WAITING
             QueueToken t1 = new QueueToken();
@@ -240,6 +261,7 @@ public class DataInitializer implements CommandLineRunner {
             t4.setCalledTime(LocalDateTime.now().minusMinutes(25));
             t4.setServiceStartTime(LocalDateTime.now().minusMinutes(23));
             t4.setServiceEndTime(LocalDateTime.now().minusMinutes(5));
+            t4.setActualServiceTimeMinutes(18);
             t4.setNotes("Loan enquiry resolved successfully");
             queueTokenRepository.save(t4);
 
@@ -258,22 +280,37 @@ public class DataInitializer implements CommandLineRunner {
             t5.setNotes("Customer did not respond when called");
             queueTokenRepository.save(t5);
 
-            // Token 6: Chennai WAITING
+            // Token 6: NO_SHOW
             QueueToken t6 = new QueueToken();
-            t6.setTokenNumber("ACC-201");
-            t6.setBranchId(chennaiBranch.getId());
-            t6.setServiceId(chennaiAcc.getId());
-            t6.setCustomerId(nirmal.getId());
-            t6.setCustomerName(nirmal.getName());
-            t6.setCustomerEmail(nirmal.getEmail());
-            t6.setCustomerPhone(nirmal.getPhone());
-            t6.setStatus(QueueStatus.WAITING);
-            t6.setIssueTime(LocalDateTime.now().minusMinutes(10));
-            t6.setEstimatedWaitMinutes(10);
+            t6.setTokenNumber("CSH-106");
+            t6.setBranchId(salemBranch.getId());
+            t6.setServiceId(salemCsh.getId());
+            t6.setCustomerId(kavin.getId());
+            t6.setCustomerName(kavin.getName());
+            t6.setCustomerEmail(kavin.getEmail());
+            t6.setCustomerPhone(kavin.getPhone());
+            t6.setStatus(QueueStatus.NO_SHOW);
+            t6.setIssueTime(LocalDateTime.now().minusMinutes(60));
+            t6.setCalledTime(LocalDateTime.now().minusMinutes(40));
+            t6.setNotes("Marked no show after second announcement");
             queueTokenRepository.save(t6);
+
+            // Token 7: Chennai WAITING
+            QueueToken t7 = new QueueToken();
+            t7.setTokenNumber("ACC-201");
+            t7.setBranchId(chennaiBranch.getId());
+            t7.setServiceId(chennaiAcc.getId());
+            t7.setCustomerId(nirmal.getId());
+            t7.setCustomerName(nirmal.getName());
+            t7.setCustomerEmail(nirmal.getEmail());
+            t7.setCustomerPhone(nirmal.getPhone());
+            t7.setStatus(QueueStatus.WAITING);
+            t7.setIssueTime(LocalDateTime.now().minusMinutes(10));
+            t7.setEstimatedWaitMinutes(10);
+            queueTokenRepository.save(t7);
         }
 
-        // Seed Sample Appointments (Dynamic for Today)
+        // Seed Sample Appointments (Dynamic for Today and Future)
         if (appointmentRepository.count() == 0) {
             Appointment a1 = new Appointment();
             a1.setReferenceCode("APT-SLM-101");
@@ -283,7 +320,7 @@ public class DataInitializer implements CommandLineRunner {
             a1.setCustomerPhone(nirmal.getPhone());
             a1.setBranchId(salemBranch.getId());
             a1.setServiceId(salemAcc.getId());
-            a1.setAppointmentDate(LocalDate.now());
+            a1.setAppointmentDate(LocalDate.now().plusDays(1));
             a1.setAppointmentTime(LocalTime.of(10, 30));
             a1.setStatus(AppointmentStatus.CONFIRMED);
             appointmentRepository.save(a1);
@@ -296,10 +333,23 @@ public class DataInitializer implements CommandLineRunner {
             a2.setCustomerPhone(vignesh.getPhone());
             a2.setBranchId(chennaiBranch.getId());
             a2.setServiceId(chennaiCsh.getId());
-            a2.setAppointmentDate(LocalDate.now());
+            a2.setAppointmentDate(LocalDate.now().plusDays(2));
             a2.setAppointmentTime(LocalTime.of(11, 00));
-            a2.setStatus(AppointmentStatus.SCHEDULED);
+            a2.setStatus(AppointmentStatus.CONFIRMED);
             appointmentRepository.save(a2);
+
+            Appointment a3 = new Appointment();
+            a3.setReferenceCode("APT-CJB-103");
+            a3.setCustomerId(harish.getId());
+            a3.setCustomerName(harish.getName());
+            a3.setCustomerEmail(harish.getEmail());
+            a3.setCustomerPhone(harish.getPhone());
+            a3.setBranchId(coimbatoreBranch.getId());
+            a3.setServiceId(salemSup.getId());
+            a3.setAppointmentDate(LocalDate.now().minusDays(1));
+            a3.setAppointmentTime(LocalTime.of(14, 00));
+            a3.setStatus(AppointmentStatus.COMPLETED);
+            appointmentRepository.save(a3);
         }
     }
 

@@ -132,7 +132,7 @@ export const StaffCurrentQueue = () => {
                 className={`btn btn-sm ${statusFilter === status ? 'btn-primary' : 'btn-outline'}`}
                 style={{ fontSize: '0.8rem', padding: '6px 12px' }}
               >
-                {status}
+                {status === 'IN_SERVICE' ? 'IN SERVICE' : status}
               </button>
             ))}
           </div>
@@ -189,7 +189,7 @@ export const StaffCurrentQueue = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--primary-subtle)', borderBottom: '1px solid var(--border)' }}>
-              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token #</th>
+              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Customer</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Service</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Priority</th>

@@ -34,7 +34,7 @@ public class StaffController {
 
     @GetMapping("/queue/{branchId}")
     public ResponseEntity<ApiResponse<List<QueueTokenDTO>>> getQueue(@PathVariable Long branchId) {
-        return ResponseEntity.ok(ApiResponse.ok(queueService.getLiveQueue(branchId)));
+        return ResponseEntity.ok(ApiResponse.ok(queueService.getBranchQueue(branchId)));
     }
 
     @GetMapping("/queue/{branchId}/waiting")

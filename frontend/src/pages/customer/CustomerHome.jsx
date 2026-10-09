@@ -105,7 +105,7 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-dark)' }}>
-                  Token #{activeToken.tokenNumber}
+                  Token {activeToken.tokenNumber}
                 </span>
                 <StatusBadge status={activeToken.status} />
               </div>

@@ -521,6 +521,11 @@ public class QueueService {
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public List<QueueTokenDTO> getBranchQueue(Long branchId) {
+        return tokenRepository.findByBranchIdOrderByIssueTimeDesc(branchId)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     public List<QueueTokenDTO> getCustomerTokens(Long customerId) {
         return tokenRepository.findByCustomerIdOrderByIssueTimeDesc(customerId)
                 .stream().map(this::toDTO).collect(Collectors.toList());

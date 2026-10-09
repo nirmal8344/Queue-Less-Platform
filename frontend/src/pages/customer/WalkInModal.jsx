@@ -73,7 +73,7 @@ export const WalkInModal = ({ isOpen, onClose, defaultBranchId, defaultServiceId
       }
 
       setGeneratedToken(token);
-      addToast('Token Issued', `Your token #${token.tokenNumber} has been generated!`, 'TOKEN_GENERATED');
+      addToast('Token Issued', `Your token ${token.tokenNumber} has been generated!`, 'TOKEN_GENERATED');
       if (onSuccess) onSuccess(token);
     } catch (err) {
       setError(err.message || 'Failed to generate token');

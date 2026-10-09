@@ -145,7 +145,7 @@ export const StaffQueueHistory = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--primary-subtle)', borderBottom: '1px solid var(--border)' }}>
-              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token #</th>
+              <th style={{ padding: '14px 18px', fontWeight: 700 }}>Token</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Customer</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Service</th>
               <th style={{ padding: '14px 18px', fontWeight: 700 }}>Counter & Staff</th>

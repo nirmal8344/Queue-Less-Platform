@@ -69,7 +69,7 @@ export const MyAppointments = ({ setCurrentView }) => {
     try {
       const token = await api.checkInAppointment(appointment.id);
       await refreshActiveToken();
-      addToast('Checked In!', `Token #${token.tokenNumber} has been generated.`, 'TOKEN_GENERATED');
+      addToast('Checked In!', `Token ${token.tokenNumber} has been generated.`, 'TOKEN_GENERATED');
       fetchAppointments();
       setCurrentView('my-queue');
     } catch (err) {
