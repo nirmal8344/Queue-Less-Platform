@@ -361,10 +361,12 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private Branch getOrCreateBranch(Long orgId, String name, String code, String address, String city, String phone, String email) {
-        return branchRepository.findAll().stream()
-                .filter(b -> b.getName().equalsIgnoreCase(name))
+        Branch b = branchRepository.findAll().stream()
+                .filter(br -> br.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseGet(() -> branchRepository.save(new Branch(orgId, name, code, address, city, phone, email)));
+        b.setWorkingDays("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY");
+        return branchRepository.save(b);
     }
 
     private ServiceEntity getOrCreateService(Long branchId, String name, String code, String description, int duration) {
