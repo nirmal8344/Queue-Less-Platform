@@ -203,37 +203,35 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        // Seed Sample Queue Tokens for ALL branches in DB with ALL statuses dynamically
+        // Ensure ALL branches in DB have Counters, Services, and Queue Tokens (Serving, Completed, Waiting)
         for (Branch b : branchRepository.findAll()) {
             try {
+                Counter c1 = getOrCreateCounter(b.getId(), "Counter 1", 1, "Ground Floor, Window 1");
+                getOrCreateCounter(b.getId(), "Counter 2", 2, "Ground Floor, Window 2");
+
                 List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
-                List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
                 if (bServices.isEmpty()) {
-                    // Create default service if missing
-                    ServiceEntity defSvc = getOrCreateService(b.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
-                    bServices = List.of(defSvc);
+                    getOrCreateService(b.getId(), "e-Sevai and Certificate Services", "ESV", "Government e-Sevai certificates and documentation", 15);
+                    getOrCreateService(b.getId(), "Account Opening", "ACC", "Open and manage customer accounts", 15);
+                    getOrCreateService(b.getId(), "Cash Deposit", "CSH", "Deposit cash at the service counter", 10);
+                    bServices = serviceRepository.findByBranchId(b.getId());
                 }
 
                 ServiceEntity s1 = bServices.get(0);
                 ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
 
-                Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : getOrCreateCounter(b.getId(), "Counter 1", 1, "Ground Floor, Window 1");
-
-                // Ensure Active Serving Token (IN_SERVICE or CALLED) exists for Live TV Display
+                // Ensure Active Serving Token (IN_SERVICE) exists for Live TV Display
                 if (queueTokenRepository.findActiveServingTokensForBranch(b.getId()).isEmpty()) {
                     try {
                         QueueToken tokInServ = new QueueToken();
-                        tokInServ.setTokenNumber(s2.getCode() + "-" + b.getId() + "02");
+                        tokInServ.setTokenNumber(s2.getCode() + "-SRV-" + b.getId());
                         tokInServ.setBranchId(b.getId());
                         tokInServ.setServiceId(s2.getId());
-                        tokInServ.setCustomerId(vignesh.getId());
-                        tokInServ.setCustomerName(vignesh.getName());
-                        tokInServ.setCustomerEmail(vignesh.getEmail());
-                        tokInServ.setCustomerPhone(vignesh.getPhone());
-                        if (c1 != null) {
-                            tokInServ.setCounterId(c1.getId());
-                            tokInServ.setCounterName(c1.getName());
-                        }
+                        tokInServ.setCustomerName("Vignesh Raj");
+                        tokInServ.setCustomerEmail("vignesh" + b.getId() + "@queueless.com");
+                        tokInServ.setCustomerPhone("+91 99401 2200" + b.getId());
+                        tokInServ.setCounterId(c1.getId());
+                        tokInServ.setCounterName(c1.getName());
                         tokInServ.setStatus(QueueStatus.IN_SERVICE);
                         tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(25));
                         tokInServ.setCalledTime(LocalDateTime.now().minusMinutes(10));
@@ -241,7 +239,7 @@ public class DataInitializer implements CommandLineRunner {
                         tokInServ.setEstimatedWaitMinutes(0);
                         queueTokenRepository.save(tokInServ);
                     } catch (Exception ex) {
-                        System.err.println("Seeding active serving token error for branch " + b.getId() + ": " + ex.getMessage());
+                        System.err.println("Error creating active serving token for branch " + b.getId() + ": " + ex.getMessage());
                     }
                 }
 
@@ -249,17 +247,14 @@ public class DataInitializer implements CommandLineRunner {
                 if (queueTokenRepository.findRecentCompletedForBranch(b.getId()).isEmpty()) {
                     try {
                         QueueToken tokComp = new QueueToken();
-                        tokComp.setTokenNumber(s1.getCode() + "-" + b.getId() + "04");
+                        tokComp.setTokenNumber(s1.getCode() + "-CMP-" + b.getId());
                         tokComp.setBranchId(b.getId());
                         tokComp.setServiceId(s1.getId());
-                        tokComp.setCustomerId(monisha.getId());
-                        tokComp.setCustomerName(monisha.getName());
-                        tokComp.setCustomerEmail(monisha.getEmail());
-                        tokComp.setCustomerPhone(monisha.getPhone());
-                        if (c1 != null) {
-                            tokComp.setCounterId(c1.getId());
-                            tokComp.setCounterName(c1.getName());
-                        }
+                        tokComp.setCustomerName("Monisha Devi");
+                        tokComp.setCustomerEmail("monisha" + b.getId() + "@queueless.com");
+                        tokComp.setCustomerPhone("+91 99401 2210" + b.getId());
+                        tokComp.setCounterId(c1.getId());
+                        tokComp.setCounterName(c1.getName());
                         tokComp.setStatus(QueueStatus.COMPLETED);
                         tokComp.setIssueTime(LocalDateTime.now().minusMinutes(50));
                         tokComp.setCalledTime(LocalDateTime.now().minusMinutes(35));
@@ -268,7 +263,7 @@ public class DataInitializer implements CommandLineRunner {
                         tokComp.setNotes("Service completed successfully");
                         queueTokenRepository.save(tokComp);
                     } catch (Exception ex) {
-                        System.err.println("Seeding completed token error for branch " + b.getId() + ": " + ex.getMessage());
+                        System.err.println("Error creating completed token for branch " + b.getId() + ": " + ex.getMessage());
                     }
                 }
 
@@ -276,19 +271,18 @@ public class DataInitializer implements CommandLineRunner {
                 if (queueTokenRepository.findWaitingTokensForBranch(b.getId()).isEmpty()) {
                     try {
                         QueueToken tokWaiting = new QueueToken();
-                        tokWaiting.setTokenNumber(s1.getCode() + "-" + b.getId() + "01");
+                        tokWaiting.setTokenNumber(s1.getCode() + "-WAI-" + b.getId());
                         tokWaiting.setBranchId(b.getId());
                         tokWaiting.setServiceId(s1.getId());
-                        tokWaiting.setCustomerId(nirmal.getId());
-                        tokWaiting.setCustomerName(nirmal.getName());
-                        tokWaiting.setCustomerEmail(nirmal.getEmail());
-                        tokWaiting.setCustomerPhone(nirmal.getPhone());
+                        tokWaiting.setCustomerName("Nirmal Kumar");
+                        tokWaiting.setCustomerEmail("nirmal" + b.getId() + "@queueless.com");
+                        tokWaiting.setCustomerPhone("+91 99401 2220" + b.getId());
                         tokWaiting.setStatus(QueueStatus.WAITING);
                         tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
                         tokWaiting.setEstimatedWaitMinutes(15);
                         queueTokenRepository.save(tokWaiting);
                     } catch (Exception ex) {
-                        System.err.println("Seeding waiting token error for branch " + b.getId() + ": " + ex.getMessage());
+                        System.err.println("Error creating waiting token for branch " + b.getId() + ": " + ex.getMessage());
                     }
                 }
             } catch (Exception e) {
