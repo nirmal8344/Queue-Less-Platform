@@ -73,12 +73,19 @@ public class DataInitializer implements CommandLineRunner {
             }
         );
 
-        // Seed Primary Staff Account safely
-        if (userRepository.findByEmail("staff@queueless.com").isEmpty()) {
-            User staff = new User("Primary Staff", "staff@queueless.com",
-                    passwordEncoder.encode(staffPass), "+91 98400 00002", Role.STAFF);
-            userRepository.save(staff);
-        }
+        // Seed / Update Primary Staff Account safely
+        userRepository.findByEmail("staff@queueless.com").ifPresentOrElse(
+            staff -> {
+                staff.setRole(Role.STAFF);
+                staff.setPassword(passwordEncoder.encode(staffPass));
+                userRepository.save(staff);
+            },
+            () -> {
+                User staff = new User("Primary Staff", "staff@queueless.com",
+                        passwordEncoder.encode(staffPass), "+91 98400 00002", Role.STAFF);
+                userRepository.save(staff);
+            }
+        );
 
         // Initialize Operational Settings if missing
         if (settingRepository.count() == 0) {
@@ -323,6 +330,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private User getOrCreateStaffUser(String name, String email, String password, String phone, Long branchId, Long counterId) {
         return userRepository.findByEmail(email).map(user -> {
+            user.setRole(Role.STAFF);
+            user.setPassword(passwordEncoder.encode(password));
             user.setAssignedBranchId(branchId);
             user.setAssignedCounterId(counterId);
             return userRepository.save(user);
@@ -335,7 +344,11 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private User getOrCreateCustomerUser(String name, String email, String password, String phone) {
-        return userRepository.findByEmail(email).orElseGet(() ->
+        return userRepository.findByEmail(email).map(user -> {
+            user.setRole(Role.CUSTOMER);
+            user.setPassword(passwordEncoder.encode(password));
+            return userRepository.save(user);
+        }).orElseGet(() ->
                 userRepository.save(new User(name, email, passwordEncoder.encode(password), phone, Role.CUSTOMER))
         );
     }
