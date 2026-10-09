@@ -202,74 +202,43 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        // Seed Sample Queue Tokens for ALL branches with ALL statuses
+        // Seed Sample Queue Tokens for ALL branches with ALL statuses dynamically
         for (Branch b : allBranches) {
-            if (queueTokenRepository.findByBranchId(b.getId()).isEmpty()) {
-                List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
-                List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
-                if (bServices.isEmpty()) continue;
+            List<ServiceEntity> bServices = serviceRepository.findByBranchId(b.getId());
+            List<Counter> bCounters = counterRepository.findByBranchId(b.getId());
+            if (bServices.isEmpty()) continue;
 
-                ServiceEntity s1 = bServices.get(0);
-                ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
-                ServiceEntity s3 = bServices.size() > 2 ? bServices.get(2) : s1;
+            ServiceEntity s1 = bServices.get(0);
+            ServiceEntity s2 = bServices.size() > 1 ? bServices.get(1) : s1;
+            ServiceEntity s3 = bServices.size() > 2 ? bServices.get(2) : s1;
 
-                Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : null;
-                Counter c2 = bCounters.size() > 1 ? bCounters.get(1) : c1;
+            Counter c1 = !bCounters.isEmpty() ? bCounters.get(0) : null;
+            Counter c2 = bCounters.size() > 1 ? bCounters.get(1) : c1;
 
-                // 1. WAITING Token
-                QueueToken tokWaiting = new QueueToken();
-                tokWaiting.setTokenNumber(s1.getCode() + "-101");
-                tokWaiting.setBranchId(b.getId());
-                tokWaiting.setServiceId(s1.getId());
-                tokWaiting.setCustomerId(nirmal.getId());
-                tokWaiting.setCustomerName(nirmal.getName());
-                tokWaiting.setCustomerEmail(nirmal.getEmail());
-                tokWaiting.setCustomerPhone(nirmal.getPhone());
-                tokWaiting.setStatus(QueueStatus.WAITING);
-                tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
-                tokWaiting.setEstimatedWaitMinutes(15);
-                queueTokenRepository.save(tokWaiting);
-
-                // 2. CALLED Token
-                QueueToken tokCalled = new QueueToken();
-                tokCalled.setTokenNumber(s2.getCode() + "-102");
-                tokCalled.setBranchId(b.getId());
-                tokCalled.setServiceId(s2.getId());
-                tokCalled.setCustomerId(vignesh.getId());
-                tokCalled.setCustomerName(vignesh.getName());
-                tokCalled.setCustomerEmail(vignesh.getEmail());
-                tokCalled.setCustomerPhone(vignesh.getPhone());
-                if (c1 != null) {
-                    tokCalled.setCounterId(c1.getId());
-                    tokCalled.setCounterName(c1.getName());
-                }
-                tokCalled.setStatus(QueueStatus.CALLED);
-                tokCalled.setIssueTime(LocalDateTime.now().minusMinutes(15));
-                tokCalled.setCalledTime(LocalDateTime.now().minusMinutes(2));
-                tokCalled.setEstimatedWaitMinutes(0);
-                queueTokenRepository.save(tokCalled);
-
-                // 3. IN_SERVICE Token
+            // Ensure Active Serving Token (CALLED or IN_SERVICE) exists for Live TV Display
+            if (queueTokenRepository.findActiveServingTokensForBranch(b.getId()).isEmpty()) {
                 QueueToken tokInServ = new QueueToken();
-                tokInServ.setTokenNumber(s3.getCode() + "-103");
+                tokInServ.setTokenNumber(s2.getCode() + "-102");
                 tokInServ.setBranchId(b.getId());
-                tokInServ.setServiceId(s3.getId());
-                tokInServ.setCustomerId(harish.getId());
-                tokInServ.setCustomerName(harish.getName());
-                tokInServ.setCustomerEmail(harish.getEmail());
-                tokInServ.setCustomerPhone(harish.getPhone());
-                if (c2 != null) {
-                    tokInServ.setCounterId(c2.getId());
-                    tokInServ.setCounterName(c2.getName());
+                tokInServ.setServiceId(s2.getId());
+                tokInServ.setCustomerId(vignesh.getId());
+                tokInServ.setCustomerName(vignesh.getName());
+                tokInServ.setCustomerEmail(vignesh.getEmail());
+                tokInServ.setCustomerPhone(vignesh.getPhone());
+                if (c1 != null) {
+                    tokInServ.setCounterId(c1.getId());
+                    tokInServ.setCounterName(c1.getName());
                 }
                 tokInServ.setStatus(QueueStatus.IN_SERVICE);
-                tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(30));
+                tokInServ.setIssueTime(LocalDateTime.now().minusMinutes(25));
                 tokInServ.setCalledTime(LocalDateTime.now().minusMinutes(10));
                 tokInServ.setServiceStartTime(LocalDateTime.now().minusMinutes(8));
                 tokInServ.setEstimatedWaitMinutes(0);
                 queueTokenRepository.save(tokInServ);
+            }
 
-                // 4. COMPLETED Token
+            // Ensure Recently Completed Token exists for Live TV Display
+            if (queueTokenRepository.findRecentCompletedForBranch(b.getId()).isEmpty()) {
                 QueueToken tokComp = new QueueToken();
                 tokComp.setTokenNumber(s1.getCode() + "-104");
                 tokComp.setBranchId(b.getId());
@@ -290,36 +259,22 @@ public class DataInitializer implements CommandLineRunner {
                 tokComp.setActualServiceTimeMinutes(18);
                 tokComp.setNotes("Service completed successfully");
                 queueTokenRepository.save(tokComp);
+            }
 
-                // 5. SKIPPED Token
-                QueueToken tokSkip = new QueueToken();
-                tokSkip.setTokenNumber(s2.getCode() + "-105");
-                tokSkip.setBranchId(b.getId());
-                tokSkip.setServiceId(s2.getId());
-                tokSkip.setCustomerId(anitha.getId());
-                tokSkip.setCustomerName(anitha.getName());
-                tokSkip.setCustomerEmail(anitha.getEmail());
-                tokSkip.setCustomerPhone(anitha.getPhone());
-                tokSkip.setStatus(QueueStatus.SKIPPED);
-                tokSkip.setIssueTime(LocalDateTime.now().minusMinutes(60));
-                tokSkip.setCalledTime(LocalDateTime.now().minusMinutes(40));
-                tokSkip.setNotes("Customer absent during call");
-                queueTokenRepository.save(tokSkip);
-
-                // 6. NO_SHOW Token
-                QueueToken tokNoShow = new QueueToken();
-                tokNoShow.setTokenNumber(s3.getCode() + "-106");
-                tokNoShow.setBranchId(b.getId());
-                tokNoShow.setServiceId(s3.getId());
-                tokNoShow.setCustomerId(kavin.getId());
-                tokNoShow.setCustomerName(kavin.getName());
-                tokNoShow.setCustomerEmail(kavin.getEmail());
-                tokNoShow.setCustomerPhone(kavin.getPhone());
-                tokNoShow.setStatus(QueueStatus.NO_SHOW);
-                tokNoShow.setIssueTime(LocalDateTime.now().minusMinutes(70));
-                tokNoShow.setCalledTime(LocalDateTime.now().minusMinutes(45));
-                tokNoShow.setNotes("Marked no-show after final alert");
-                queueTokenRepository.save(tokNoShow);
+            // Ensure Waiting Token exists
+            if (queueTokenRepository.findWaitingTokensForBranch(b.getId()).isEmpty()) {
+                QueueToken tokWaiting = new QueueToken();
+                tokWaiting.setTokenNumber(s1.getCode() + "-101");
+                tokWaiting.setBranchId(b.getId());
+                tokWaiting.setServiceId(s1.getId());
+                tokWaiting.setCustomerId(nirmal.getId());
+                tokWaiting.setCustomerName(nirmal.getName());
+                tokWaiting.setCustomerEmail(nirmal.getEmail());
+                tokWaiting.setCustomerPhone(nirmal.getPhone());
+                tokWaiting.setStatus(QueueStatus.WAITING);
+                tokWaiting.setIssueTime(LocalDateTime.now().minusMinutes(20));
+                tokWaiting.setEstimatedWaitMinutes(15);
+                queueTokenRepository.save(tokWaiting);
             }
         }
 

@@ -152,7 +152,7 @@ export const QueueDisplay = ({ setCurrentView }) => {
               <div className="qd-empty-icon">
                 <Clock size={40} />
               </div>
-              <p className="qd-empty-text">All counters are currently open.</p>
+              <p className="qd-empty-text">No customer currently being served.</p>
               <p className="qd-empty-subtext">The next customer token will be called shortly.</p>
             </div>
           ) : (

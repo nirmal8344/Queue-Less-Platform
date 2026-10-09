@@ -32,7 +32,7 @@ public interface QueueTokenRepository extends JpaRepository<QueueToken, Long> {
     @Query("SELECT q FROM QueueToken q WHERE q.branchId = :branchId AND q.status IN ('WAITING', 'CALLED', 'AT_COUNTER', 'IN_SERVICE', 'PAUSED') ORDER BY q.issueTime ASC")
     List<QueueToken> findLiveQueueForBranch(@Param("branchId") Long branchId);
 
-    @Query("SELECT q FROM QueueToken q WHERE q.branchId = :branchId AND q.status = 'COMPLETED' ORDER BY q.serviceEndTime DESC")
+    @Query("SELECT q FROM QueueToken q WHERE q.branchId = :branchId AND q.status = 'COMPLETED' ORDER BY COALESCE(q.serviceEndTime, q.issueTime) DESC")
     List<QueueToken> findRecentCompletedForBranch(@Param("branchId") Long branchId);
 
     @Query("SELECT COUNT(q) FROM QueueToken q WHERE q.branchId = :branchId AND q.status = 'WAITING' AND (q.priorityCategory > :priority OR (q.priorityCategory = :priority AND q.issueTime < :issueTime))")
