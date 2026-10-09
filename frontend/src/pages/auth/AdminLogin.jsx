@@ -151,11 +151,6 @@ export const AdminLogin = ({ setCurrentView }) => {
             </button>
           </form>
 
-          <div className="auth-info-banner">
-            <Shield size={18} color="var(--primary)" style={{ flexShrink: 0 }} />
-            <span>Protected administrative console. Unauthorized access is strictly prohibited.</span>
-          </div>
-
           <div className="auth-footer-text" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
             <span onClick={() => setCurrentView('customer-login')} className="auth-link">
               ← Customer Login

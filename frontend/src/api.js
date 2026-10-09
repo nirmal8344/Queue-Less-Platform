@@ -1,14 +1,19 @@
 const getBaseUrl = () => {
+  let url = 'http://localhost:8080';
   if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim() !== '') {
-    return import.meta.env.VITE_API_URL;
+    url = import.meta.env.VITE_API_URL.trim();
+  } else if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    url = 'https://queue-less-platform.onrender.com';
   }
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return 'https://queue-less-platform.onrender.com';
+
+  url = url.replace(/\/+$/, '');
+  if (url.endsWith('/api')) {
+    return url;
   }
-  return 'http://localhost:8080';
+  return `${url}/api`;
 };
 
-const BASE_URL = getBaseUrl().replace(/\/+$/, '') + '/api';
+const BASE_URL = getBaseUrl();
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('queueless_token');
