@@ -233,7 +233,7 @@ public class AdminController {
     }
 
     // --- Analytics Dashboard ---
-    @GetMapping("/analytics")
+    @GetMapping({"/analytics", "/analytics/summary"})
     public ResponseEntity<ApiResponse<AnalyticsSummaryDTO>> getAnalytics(
             @RequestParam(required = false) Long branchId) {
         return ResponseEntity.ok(ApiResponse.ok(analyticsService.getAnalyticsSummary(branchId)));

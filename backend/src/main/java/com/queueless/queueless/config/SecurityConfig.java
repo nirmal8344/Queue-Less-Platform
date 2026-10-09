@@ -94,18 +94,23 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        List<String> allowedPatterns = new java.util.ArrayList<>(List.of(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://*.vercel.app",
+            "https://queue-less-platform.vercel.app"
+        ));
+
         if (corsAllowedOrigins != null && !corsAllowedOrigins.isBlank()) {
-            List<String> origins = Arrays.asList(corsAllowedOrigins.split(","));
-            configuration.setAllowedOrigins(origins);
-            configuration.setAllowedOriginPatterns(List.of("https://*.vercel.app", "http://localhost:*"));
-        } else {
-            configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "https://*.vercel.app",
-                "https://queue-less-platform.vercel.app"
-            ));
+            for (String origin : corsAllowedOrigins.split(",")) {
+                String trimmed = origin.trim();
+                if (!trimmed.isEmpty() && !allowedPatterns.contains(trimmed)) {
+                    allowedPatterns.add(trimmed);
+                }
+            }
         }
 
+        configuration.setAllowedOriginPatterns(allowedPatterns);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(List.of("Authorization"));
