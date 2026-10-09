@@ -25,21 +25,27 @@ export const StaffCurrentQueue = () => {
   const fetchQueue = async () => {
     try {
       const [bList, qList, cList, sList] = await Promise.all([
-        api.getBranches(),
-        api.getStaffQueue(branchId),
-        api.getCounters(branchId),
-        api.getAllStaffAdmin()
+        api.getBranches().catch(() => []),
+        api.getStaffQueue(branchId).catch(() => []),
+        api.getCounters(branchId).catch(() => []),
+        api.getAllStaffAdmin().catch(() => [])
       ]);
-      setBranches(bList);
-      setQueueTokens(qList);
-      setCounters(cList);
-      setStaffList(sList);
+      setBranches(bList || []);
+      setQueueTokens(qList || []);
+      setCounters(cList || []);
+      setStaffList(sList || []);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user?.assignedBranchId && user.assignedBranchId !== branchId) {
+      setBranchId(user.assignedBranchId);
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchQueue();

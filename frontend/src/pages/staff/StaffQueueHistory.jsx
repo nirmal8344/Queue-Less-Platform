@@ -21,14 +21,14 @@ export const StaffQueueHistory = () => {
     try {
       const branchId = user?.assignedBranchId || 1;
       const [qList, cList, sList] = await Promise.all([
-        api.getStaffQueue(branchId),
-        api.getCounters(branchId),
-        api.getAllStaffAdmin()
+        api.getStaffQueue(branchId).catch(() => []),
+        api.getCounters(branchId).catch(() => []),
+        api.getAllStaffAdmin().catch(() => [])
       ]);
-      const past = qList.filter(t => t.status === 'COMPLETED' || t.status === 'NO_SHOW' || t.status === 'SKIPPED');
+      const past = (qList || []).filter(t => t.status === 'COMPLETED' || t.status === 'NO_SHOW' || t.status === 'SKIPPED');
       setTokens(past);
-      setCounters(cList);
-      setStaffList(sList);
+      setCounters(cList || []);
+      setStaffList(sList || []);
     } catch (e) {
       console.error(e);
     } finally {
