@@ -30,20 +30,28 @@ export const CustomerHome = ({ setCurrentView, onSelectServiceForBooking }) => {
   const [walkInServiceId, setWalkInServiceId] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
     api.getBranches().then((data) => {
-      setBranches(data);
-      if (data.length > 0) {
+      setBranches(data || []);
+      if (data && data.length > 0) {
         setSelectedBranchId(data[0].id);
+      } else {
+        setLoading(false);
       }
-    }).catch(console.error);
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
     if (selectedBranchId) {
       setLoading(true);
       api.getServices(selectedBranchId).then((data) => {
-        setServices(data);
+        setServices(data || []);
       }).catch(console.error).finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [selectedBranchId]);
 

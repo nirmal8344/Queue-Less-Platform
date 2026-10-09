@@ -72,14 +72,14 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         if (corsAllowedOrigins != null && !corsAllowedOrigins.isBlank()) {
-            // Production: use explicit origins from env var (comma-separated)
-            configuration.setAllowedOrigins(Arrays.asList(corsAllowedOrigins.split(",")));
+            List<String> origins = Arrays.asList(corsAllowedOrigins.split(","));
+            configuration.setAllowedOrigins(origins);
+            configuration.setAllowedOriginPatterns(List.of("https://*.vercel.app", "http://localhost:*"));
         } else {
-            // Development fallback: allow localhost origins
-            configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:4173"
+            configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "https://*.vercel.app",
+                "https://queue-less-platform.vercel.app"
             ));
         }
 

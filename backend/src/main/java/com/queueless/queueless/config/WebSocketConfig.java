@@ -22,17 +22,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        String[] origins;
-        if (corsAllowedOrigins != null && !corsAllowedOrigins.isBlank()) {
-            origins = corsAllowedOrigins.split(",");
-        } else {
-            origins = new String[]{"http://localhost:5173", "http://localhost:3000", "http://localhost:4173"};
-        }
-
         registry.addEndpoint("/ws-queue")
-                .setAllowedOrigins(origins)
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
         registry.addEndpoint("/ws-queue")
-                .setAllowedOrigins(origins);
+                .setAllowedOriginPatterns("*");
     }
 }

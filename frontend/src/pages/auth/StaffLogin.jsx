@@ -41,6 +41,63 @@ export const StaffLogin = ({ setCurrentView }) => {
             <h2 className="auth-page-title">Staff Login</h2>
           </div>
 
+          {/* Role Portal Selector Bar */}
+          <div style={{
+            display: 'flex',
+            backgroundColor: 'var(--primary-subtle)',
+            padding: '4px',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: '18px',
+            border: '1px solid var(--border)'
+          }}>
+            <button
+              type="button"
+              onClick={() => setCurrentView('customer-login')}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                backgroundColor: 'transparent',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              Customer
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentView('staff-login')}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                backgroundColor: 'var(--surface)',
+                color: 'var(--primary-dark)',
+                boxShadow: 'var(--shadow-sm)'
+              }}
+            >
+              Staff
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentView('admin-login')}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                backgroundColor: 'transparent',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              Admin
+            </button>
+          </div>
+
           {error && (
             <div className="auth-error-box">
               <AlertCircle size={16} style={{ flexShrink: 0 }} />

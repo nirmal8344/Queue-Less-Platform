@@ -41,7 +41,23 @@ const AUTH_VIEWS = ['login', 'customer-login', 'register', 'customer-register', 
 
 const AppContent = () => {
   const { user } = useAuth();
-  const [currentView, setCurrentView] = useState('customer-home');
+  const [currentView, setCurrentView] = useState(() => {
+    if (!user) return 'customer-login';
+    if (user.role === 'STAFF') return 'staff-dashboard';
+    if (user.role === 'ADMIN') return 'admin-dashboard';
+    return 'customer-home';
+  });
+
+  // Automatically redirect unauthenticated users to Login First
+  React.useEffect(() => {
+    if (!user && !AUTH_VIEWS.includes(currentView) && currentView !== 'queue-display') {
+      setCurrentView('customer-login');
+    } else if (user && AUTH_VIEWS.includes(currentView)) {
+      if (user.role === 'STAFF') setCurrentView('staff-dashboard');
+      else if (user.role === 'ADMIN') setCurrentView('admin-dashboard');
+      else setCurrentView('customer-home');
+    }
+  }, [user]);
 
   // Preselected booking parameters
   const [preselectedBranchId, setPreselectedBranchId] = useState(null);

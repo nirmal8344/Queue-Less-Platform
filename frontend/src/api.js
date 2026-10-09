@@ -1,4 +1,14 @@
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080') + '/api';
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim() !== '') {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://queue-less-platform.onrender.com';
+  }
+  return 'http://localhost:8080';
+};
+
+const BASE_URL = getBaseUrl().replace(/\/+$/, '') + '/api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('queueless_token');
