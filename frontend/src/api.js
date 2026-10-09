@@ -35,14 +35,30 @@ const handleResponse = async (res) => {
   return data.data !== undefined ? data.data : data;
 };
 
+const customFetch = async (url, options = {}, retries = 1) => {
+  try {
+    const res = await fetch(url, options);
+    return await handleResponse(res);
+  } catch (err) {
+    if (retries > 0 && (err.name === 'TypeError' || err.message === 'Failed to fetch')) {
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+      return customFetch(url, options, retries - 1);
+    }
+    if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
+      throw new Error('Unable to connect to backend server. The server may be warming up or offline. Please try again in a few seconds.');
+    }
+    throw err;
+  }
+};
+
 export const api = {
   // Auth
   login: (email, password, expectedRole) =>
-    fetch(`${BASE_URL}/auth/login`, {
+    customFetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, expectedRole }),
-    }).then(handleResponse),
+    }),
 
   register: (payload) =>
     fetch(`${BASE_URL}/auth/register`, {
